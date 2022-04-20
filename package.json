@@ -25,6 +25,7 @@
 	},
 	"dependencies": {
 		"@babel/standalone": "^7.17.9",
+		"@types/babel__standalone": "^7.1.4",
 		"@types/react": "^18.0.5",
 		"@types/react-dom": "^18.0.1",
 		"antd": "^4.19.5",
