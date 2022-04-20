@@ -1,4 +1,4 @@
-## 介绍
+## Ant Design
 
 在 Obsidian 中使用 Ant Design 中的模块，方法如下
 
@@ -144,4 +144,44 @@ root.render(tabEl)
 
 <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/ImgHosting3@master/202204201504022022-04-20-15-04-03.png" style="zoom:50%"/>
 
-暂时不支持在元素里面写 Markdown 的内容，会考虑后续加上。
+## Ant Design Charts
+
+现在可以使用 Ant Design Charts 了，使用方法如下
+
+````
+```antd-charts
+const { Line } = charts
+const data = [
+  { year: '1991', value: 3 },
+  { year: '1992', value: 4 },
+  { year: '1993', value: 3.5 },
+  { year: '1994', value: 5 },
+  { year: '1995', value: 4.9 },
+  { year: '1996', value: 6 },
+  { year: '1997', value: 7 },
+  { year: '1998', value: 9 },
+  { year: '1999', value: 13 },
+];
+
+const config = {
+  data,
+  height: 400,
+  xField: 'year',
+  yField: 'value',
+  point: {
+    size: 5,
+    shape: 'diamond',
+  },
+};
+
+const lineEl = <Line {...config} />;
+const root = ReactDOM.createRoot(el);
+root.render(lineEl);
+```
+````
+
+<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/ImgHosting3@master/202204201700272022-04-20-17-00-28.png" style="zoom:50%"/>
+
+用法请参考 [AntV](https://antv.vision/zh)
+
+>暂时不支持在元素里面写 Markdown 的内容，会考虑后续加上。
