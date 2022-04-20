@@ -14,10 +14,10 @@ const { Steps } = antd
 const { Step } = Steps
 
 const stepEl = <>
-	<Steps current={1}>
-		<Step title={"First"} subTitle={"First"}></Step>
-		<Step title={"Second"} subTitle={"Second"}></Step>
-	</Steps>
+  <Steps current={1}>
+    <Step title={"First"} subTitle={"First"}></Step>
+    <Step title={"Second"} subTitle={"Second"}></Step>
+  </Steps>
 </>
 
 const root = ReactDOM.createRoot(el)
@@ -184,4 +184,98 @@ root.render(lineEl);
 
 用法请参考 [AntV](https://antv.vision/zh)
 
->暂时不支持在元素里面写 Markdown 的内容，会考虑后续加上。
+## renderMarkdown
+
+假如你希望写一个 Tab，用来切换不同的代码块
+
+<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/ImgHosting3@master/动画2022-04-20-19-12-24.gif" style="zoom:50%"/>
+
+
+你会使用 Antd 的 Tabs 组件和 TabPane 组件
+
+````
+```antd
+const { Tabs } = antd;
+const { TabPane } = Tabs;
+
+const code1 = `\`\`\` C
+#include<stdio.h>
+int main()
+{
+    printf("Hello World");
+    return 0;
+}
+\`\`\``
+
+const code2 = `\`\`\` JavaScript
+const a = 1
+const b = 2
+const c = a + b
+console.log(c)
+\`\`\``
+
+const CodeTab = () => (
+  <Tabs defaultActiveKey="1">
+    <TabPane tab="C" key="1">
+      {code1}
+    </TabPane>
+    <TabPane tab="JavaScript" key="2">
+      {code2}
+    </TabPane>
+  </Tabs>
+);
+
+const root = ReactDOM.createRoot(el)
+root.render(<CodeTab />)
+```
+````
+
+但是你会发现出来的是纯文本
+
+
+<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/ImgHosting3@master/动画2022-04-20-19-15-54.gif" style="zoom:50%"/>
+
+
+这是因为在 `antd` 代码块里面的内容不会被解析，为了在组件里面使用 Markdown 的能力，我们向全局暴露了一个方法 `renderMarkdown`，它接收 Markdown 字符，输出对应的 `html` 字符，并且这是一个异步的方法，返回的是一个 `Promise`。
+
+所以我们可以修改写法如下，就可以得到想要的效果了
+
+````
+```antd
+const { Tabs } = antd;
+const { TabPane } = Tabs;
+
+const code1 = `\`\`\` C
+#include<stdio.h>
+int main()
+{
+    printf("Hello World");
+    return 0;
+}
+\`\`\``
+
+const code2 = `\`\`\` JavaScript
+const a = 1
+const b = 2
+const c = a + b
+console.log(c)
+\`\`\``
+
+const html1 = await renderMarkdown(code1)
+const html2 = await renderMarkdown(code2)
+
+const CodeTab = () => (
+  <Tabs defaultActiveKey="1">
+    <TabPane tab="C" key="1">
+      <div dangerouslySetInnerHTML={{ __html: html1 }} />
+    </TabPane>
+    <TabPane tab="JavaScript" key="2">
+      <div dangerouslySetInnerHTML={{ __html: html2 }} />
+    </TabPane>
+  </Tabs>
+);
+
+const root = ReactDOM.createRoot(el)
+root.render(<CodeTab />)
+```
+````

@@ -1,4 +1,4 @@
-import {  Plugin, MarkdownPostProcessorContext } from 'obsidian';
+import {  Plugin, MarkdownPostProcessorContext, MarkdownRenderer } from 'obsidian';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import * as antd from 'antd';
@@ -17,13 +17,31 @@ export default class Antd extends Plugin {
 		window.antd = antd;
 		// @ts-ignore
 		window.charts = charts;
+		// @ts-ignore
+		window.renderMarkdown = async (source: string) => {
+			const tempEl = createDiv();
+			await MarkdownRenderer.renderMarkdown(source, tempEl, '.', null);
+			return tempEl.innerHTML;
+		};
 
 		this.registerMarkdownCodeBlockProcessor('antd', (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {					
-			eval(this.transpileCode(source));
+			const sourceScript = this.transpileCode(source);
+			const evalScript = `
+				(async () => {
+					${sourceScript}
+				})()
+			`
+			eval(evalScript);
 		});
 
 		this.registerMarkdownCodeBlockProcessor('antd-charts', (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-			eval(this.transpileCode(source));
+			const sourceScript = this.transpileCode(source);
+			const evalScript = `
+				(async () => {
+					${sourceScript}
+				})()
+			`
+			eval(evalScript);
 		})
 	}
 
@@ -46,5 +64,4 @@ export default class Antd extends Plugin {
 	onunload() {
 
 	}
-
 }
