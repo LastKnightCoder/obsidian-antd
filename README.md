@@ -144,6 +144,8 @@ root.render(tabEl)
 
 <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/ImgHosting3@master/202204201504022022-04-20-15-04-03.png" style="zoom:50%"/>
 
+所有组件及用法参考 [Ant Design](https://ant.design/index-cn)。
+
 ## Ant Design Charts
 
 现在可以使用 Ant Design Charts 了，使用方法如下
@@ -182,7 +184,7 @@ root.render(lineEl);
 
 <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/ImgHosting3@master/202204201700272022-04-20-17-00-28.png" style="zoom:50%"/>
 
-用法请参考 [AntV](https://antv.vision/zh)
+所有图表及用法参考 [AntV](https://antv.vision/zh)。
 
 ## renderMarkdown
 
@@ -279,3 +281,82 @@ const root = ReactDOM.createRoot(el)
 root.render(<CodeTab />)
 ```
 ````
+
+## useLocalStroage 和 useFile
+
+假设你写了一个按钮，每次点击时可以进行加一
+
+````
+```antd
+const { useState } = React
+const { Button } = antd
+const Counter = () => {
+  const [counter, setCounter] = useState(0);
+  const handleClick = () => {
+    setCounter(counter + 1)
+  }
+  return (
+    <Button type="primary" onClick={handleClick}>{counter}++</Button>
+  )
+}
+const root = ReactDOM.createRoot(el)
+root.render(<Counter />)
+```
+````
+
+<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/ImgHosting3@master/useState2022-04-21-14-29-40.gif" style="zoom:50%"/>
+
+存在的一个问题时，当你离开当前页面时，然后回来时，发现之前的状态并没有被保存，这极大的限制了 React 的使用，为了保存组件的状态，我提供了两个 React Hook 来对数据进行持久化：
+
+- useLocalStorage：将数据保存在 LocalStorage 中，需要提供键进行访问
+- useFile：将数据保存在文件中，需要提供一个文件名，并且你需要在设置中设置数据保存的路径，默认保存在笔记的根目录下。
+
+useLocalStorage 使用示例：
+
+````
+```antd
+const { Button } = antd
+const StatedCounter = () => {
+  const [counter, setCounter] = useLocalStorage('counter')
+  if (!counter) {
+    setCounter(0)
+  } 
+  const handleClick = () => {
+    setCounter(parseInt(counter) + 1)
+  }
+  return (
+    <Button type="primary" onClick={handleClick}>{counter}++</Button>
+  )
+}
+
+const root = ReactDOM.createRoot(el)
+root.render(<StatedCounter />)
+```
+````
+
+useFile 使用示例
+
+````
+```antd
+const { Button } = antd
+const StatedCounter = () => {
+  const [counter, setCounter] = useFile('counter.txt')
+  if (!counter) {
+    setCounter(0 + "")
+  } 
+  const handleClick = () => {
+    setCounter(parseInt(counter) + 1 + "")
+  }
+  return (
+    <Button type="primary" onClick={handleClick}>{counter}++</Button>
+  )
+}
+
+const root = ReactDOM.createRoot(el)
+root.render(<StatedCounter />)
+```
+````
+
+从使用上，我推荐 useFile，因为 useLocalStorage 不好迁移，如果迁移到新的环境，那么可能之前保存的数据就无效了，如果没有迁移需求的，useLocalStorage 更方便，也不会产生一些数据文件，但是 localStorage 可能有容量限制。
+
+>注意：useFile 和 useStorage 都只能保存文本内容，读取到的内容也是字符串，需要自己手动转换。

@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-antd",
 	"name": "Antd",
-	"version": "0.2.1",
+	"version": "0.3.1",
 	"minAppVersion": "0.12.0",
 	"description": "Using Antd Design (Charts) Component In Your Obsidian",
 	"author": "Obsidian",

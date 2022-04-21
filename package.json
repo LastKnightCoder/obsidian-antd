@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-antd",
-	"version": "0.2.1",
+	"version": "0.3.1",
 	"description": "Using Antd Design (Charts) Component In Your Obsidian",
 	"main": "main.js",
 	"scripts": {
