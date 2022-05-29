@@ -1,7 +1,7 @@
 {
 	"name": "obsidian-antd",
-	"version": "1.0.0",
-	"description": "Using Antd Design (Charts) Component In Your Obsidian",
+	"version": "1.1.0",
+	"description": "Using Antd Design Component In Your Obsidian",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
@@ -30,6 +30,8 @@
 		"@types/react": "^18.0.5",
 		"@types/react-dom": "^18.0.1",
 		"antd": "^4.19.5",
+		"css-tree": "^2.1.0",
+		"esbuild-css-modules-plugin": "^2.2.16",
 		"react": "^18.0.0",
 		"react-dom": "^18.0.0"
 	}

@@ -1,0 +1,32 @@
+.nav {
+  display: flex;
+  gap: 1em;
+}
+
+.navItem {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  text-align: center;
+  line-height: 40px;
+  font-size: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--text-normal);
+  padding: 1em;
+  box-sizing: border-box;
+  transition: all 0.2s;
+  color: var(--text-normal);
+}
+.navItem:hover {
+  color: #1a66ff;
+  border: 2px solid #1a66ff !important;
+  box-shadow: 0 0px 15px rgba(26, 102, 255, 0.3);
+}
+
+.navSvg path{
+  transition: all 0.3s;
+  fill: var(--text-normal);
+}
+.navItem:hover .navSvg path {
+  fill: #1a66ff;
+}

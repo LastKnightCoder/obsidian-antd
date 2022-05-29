@@ -7,6 +7,9 @@ import * as Babel from '@babel/standalone';
 const fs = require('fs');
 const path = require('path');
 
+import Nav from './components/Nav';
+import CodeTab from './components/Tabs';
+
 interface SaveFolderSettings {
   folder: string;
 }
@@ -38,6 +41,12 @@ export default class Antd extends Plugin {
     window.antd = antd;
     // @ts-ignore
     // window.charts = charts;
+    // @ts-ignore
+    window.components = {}
+    // @ts-ignore
+    window.components.Nav = Nav;
+    // @ts-ignore
+    window.components.CodeTab = CodeTab;
     // @ts-ignore
     window.renderMarkdown = async (source: string) => {
       const tempEl = createDiv();

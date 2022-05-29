@@ -368,3 +368,67 @@ root.render(<StatedCounter />)
 >注意：useFile 和 useStorage 都只能保存文本内容，读取到的内容也是字符串，需要自己手动转换。
 
 >建议将文件夹设置为以 `.` 开头，它表示隐藏文件夹，不会出现在文件列表中，方便整理。
+
+## 内置组件
+
+### Nav
+
+仿照博客功能，可以在文章末尾使用该组件，在上一篇与下一篇之间进行跳转
+
+<!-- <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/dd2022-05-29-16-25-06.gif" style="zoom:50%"/> -->
+
+<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/动画2022-05-29-16-25-40.apng" style="zoom:50%; border-radius: 8px; box-shadow: 0 0 10px 0 rgba(0, 0, 0, .1);"/>
+
+该组件接收四个参数
+
+| 参数 | 含义 |
+| --- | --- |
+| prev | 上一篇文章 |
+| next | 下一篇文章 |
+| noPrev | 当设置此参数时，不显示上一篇，用于第一篇文章 |
+| noNext | 当设置此参数时，不显示下一篇，用于最后一篇文章 |
+
+使用方法
+
+````
+```antd
+const { Nav} = components
+const root = React.createRoot(el)
+el.render(<Nav noPrev next="xxx" />)
+```
+````
+
+>参数不需加 `.md`
+
+### CodeTab
+
+用于显示代码块的组件，第一个 Tab 是代码，第二个是代码对应的内容，通过 `children` 传递。
+
+接收两个参数
+
+| 参数 | 含义 |
+| --- | --- |
+| html | 代码对应的 HTML，可使用提供的 renderMarkdown 进行解析 |
+| tabNames | 为一个包含两个元素数组，表示两个 Tab 的名称 |
+
+使用方法
+
+````
+```antd
+const { CodeTab } = components
+
+const code = `\`\`\`html
+<h1 style={{color: 'red'}}>Hello React</h1>
+\`\`\``
+const html = await renderMarkdown(code)
+
+const root = ReactDOM.createRoot(el)
+root.render(
+  <CodeTab html={html} tabNames={['HTML', 'RESULT']}>
+    <h1 style={{color: 'red'}}>Hello React</h1>
+  </CodeTab>
+)
+```
+````
+
+<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/动画2022-05-29-16-45-45.apng" style="zoom:50%"/>
