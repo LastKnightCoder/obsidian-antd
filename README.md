@@ -375,9 +375,9 @@ root.render(<StatedCounter />)
 
 仿照博客功能，可以在文章末尾使用该组件，在上一篇与下一篇之间进行跳转
 
-<!-- <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/dd2022-05-29-16-25-06.gif" style="zoom:50%"/> -->
+<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/dd2022-05-29-16-25-06.gif" style="zoom:50%"/>
 
-<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/动画2022-05-29-16-25-40.apng" style="zoom:50%; border-radius: 8px; box-shadow: 0 0 10px 0 rgba(0, 0, 0, .1);"/>
+<!-- <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/动画2022-05-29-16-25-40.apng" style="zoom:50%; border-radius: 8px; box-shadow: 0 0 10px 0 rgba(0, 0, 0, .1);"/> -->
 
 该组件接收四个参数
 
