@@ -15,10 +15,10 @@
   padding: 1em;
   box-sizing: border-box;
   transition: all 0.2s;
-  color: var(--text-normal);
+  color: var(--text-normal) !important;
 }
 .navItem:hover {
-  color: #1a66ff;
+  color: #1a66ff !important;
   border: 2px solid #1a66ff !important;
   box-shadow: 0 0px 15px rgba(26, 102, 255, 0.3);
 }
