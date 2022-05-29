@@ -146,6 +146,8 @@ root.render(tabEl)
 
 所有组件及用法参考 [Ant Design](https://ant.design/index-cn)。
 
+<del>
+
 ## Ant Design Charts
 
 现在可以使用 Ant Design Charts 了，使用方法如下
@@ -185,6 +187,10 @@ root.render(lineEl);
 <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/ImgHosting3@master/202204201700272022-04-20-17-00-28.png" style="zoom:50%"/>
 
 所有图表及用法参考 [AntV](https://antv.vision/zh)。
+
+</del>
+
+为了插件加载速度的考虑，移除掉 `Antd Charts`，考虑在另一个插件中添加此功能。
 
 ## renderMarkdown
 
@@ -360,3 +366,5 @@ root.render(<StatedCounter />)
 从使用上，我推荐 useFile，因为 useLocalStorage 不好迁移，如果迁移到新的环境，那么可能之前保存的数据就无效了，如果没有迁移需求的，useLocalStorage 更方便，也不会产生一些数据文件，但是 localStorage 可能有容量限制。
 
 >注意：useFile 和 useStorage 都只能保存文本内容，读取到的内容也是字符串，需要自己手动转换。
+
+>建议将文件夹设置为以 `.` 开头，它表示隐藏文件夹，不会出现在文件列表中，方便整理。
