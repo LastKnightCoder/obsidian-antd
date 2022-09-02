@@ -146,8 +146,6 @@ root.render(tabEl)
 
 所有组件及用法参考 [Ant Design](https://ant.design/index-cn)。
 
-<del>
-
 ## Ant Design Charts
 
 现在可以使用 Ant Design Charts 了，使用方法如下
@@ -187,10 +185,6 @@ root.render(lineEl);
 <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/ImgHosting3@master/202204201700272022-04-20-17-00-28.png" style="zoom:50%"/>
 
 所有图表及用法参考 [AntV](https://antv.vision/zh)。
-
-</del>
-
-为了插件加载速度的考虑，移除掉 `Antd Charts`，考虑在另一个插件中添加此功能。
 
 ## renderMarkdown
 
@@ -314,8 +308,8 @@ root.render(<Counter />)
 
 存在的一个问题时，当你离开当前页面时，然后回来时，发现之前的状态并没有被保存，这极大的限制了 React 的使用，为了保存组件的状态，我提供了两个 React Hook 来对数据进行持久化：
 
-- useLocalStorage：将数据保存在 LocalStorage 中，需要提供键进行访问
-- useFile：将数据保存在文件中，需要提供一个文件名，并且你需要在设置中设置数据保存的路径，默认保存在笔记的根目录下。
+- useLocalStorage：将数据保存在 LocalStorage 中，需要提供键（需保证不同组件唯一）和初始值
+- useFile：将数据保存在文件中，需要提供一个文件名以及初始值，并且你需要在设置中设置数据保存的路径，默认保存在笔记的根目录下。
 
 useLocalStorage 使用示例：
 
@@ -323,10 +317,8 @@ useLocalStorage 使用示例：
 ```antd
 const { Button } = antd
 const StatedCounter = () => {
-  const [counter, setCounter] = useLocalStorage('counter')
-  if (!counter) {
-    setCounter(0)
-  } 
+  const [counter, setCounter] = useLocalStorage('counter', 0)
+
   const handleClick = () => {
     setCounter(parseInt(counter) + 1)
   }
@@ -346,10 +338,7 @@ useFile 使用示例
 ```antd
 const { Button } = antd
 const StatedCounter = () => {
-  const [counter, setCounter] = useFile('counter.txt')
-  if (!counter) {
-    setCounter(0 + "")
-  } 
+  const [counter, setCounter] = useFile('counter.md', 0)
   const handleClick = () => {
     setCounter(parseInt(counter) + 1 + "")
   }
@@ -432,3 +421,10 @@ root.render(
 ````
 
 <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/动画2022-05-29-16-45-45.apng" style="zoom:50%"/>
+
+## CHANGELOG
+
+### 1.2.0 
+
+- 将 Node 接口替换为 `Obsidian` 的接口，从而支持移动端的能力。
+- 支持 antd/charts，加载速度会被极大拖累。

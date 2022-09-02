@@ -1,27 +1,25 @@
-import {  App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, MarkdownRenderer, Notice, TFile } from 'obsidian';
+import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, MarkdownRenderer, TFile } from 'obsidian';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import * as antd from 'antd';
-// import * as charts from '@ant-design/charts';
+import * as charts from '@ant-design/charts';
 import * as Babel from '@babel/standalone';
-const fs = require('fs');
-const path = require('path');
 
 import Nav from './components/Nav';
-import CodeTab from './components/Tabs';
+import CodeTab from './components/CodeTab';
 
 interface SaveFolderSettings {
   folder: string;
 }
 
 const DEFAULT_SETTINGS: SaveFolderSettings = {
-  folder: '',
+  folder: '.data',
 };
 
-const { useState } = React;
-const useLocalStorage = (key: string) => {
+const { useState, useEffect } = React;
+const useLocalStorage = (key: string, initValue: string = '') => {
   const value = window.localStorage.getItem(key) || '';
-  const [content, setContent] = useState(value);
+  const [content, setContent] = useState(value || initValue);
   const setContentToLocalStorage = (data: string) => {
     window.localStorage.setItem(key, data);
     setContent(data);
@@ -39,8 +37,8 @@ export default class Antd extends Plugin {
     window.ReactDOM = ReactDOM;
     // @ts-ignore
     window.antd = antd;
-    // @ts-ignore
-    // window.charts = charts;
+    //@ts-ignore
+    window.charts = charts;
     // @ts-ignore
     window.components = {}
     // @ts-ignore
@@ -56,44 +54,50 @@ export default class Antd extends Plugin {
     // @ts-ignore
     window.useLocalStorage = useLocalStorage;
 
-    const createFolder = (folder: string) => {
-      // @ts-ignore
-      // 获得当前 valut 所在的根路径，然后递归创建文件夹
-      const root = this.app.vault.adapter.basePath;
-      const folderPath = path.join(root, folder);
-      if (!fs.existsSync(folderPath)) {
-        const folders = folder.split('/');
-        
-        let currentPath = root;
-        for (let i = 0; i < folders.length; i++) {
-          currentPath = path.join(currentPath, folders[i]);
-          if (!fs.existsSync(currentPath)) {
-            fs.mkdirSync(currentPath);
-          }
-        }
-      }
-    }
+    const useFile = (fileName: string, initValue: string = '') => {
+      const [content, setContent] = useState<string>('');
+      const [file, setFile] = useState<TFile>(null);
 
-    const useFile = (fileName: string) => {
-      createFolder(this.settings.folder);
-      // @ts-ignore
-      const filePath = path.join(this.app.vault.adapter.basePath, this.settings.folder, fileName);
-      if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, '');
-      }	
-    
-      const [content, setContent] = useState(fs.readFileSync(filePath, 'utf-8'));
       const setContentToFile = (data: string) => {
-        fs.writeFileSync(filePath, data);
         setContent(data);
+        this.app.vault.modify(file, data);
       }
-    
+
+      useEffect(() => {
+        (async () => {
+          try {
+            await this.app.vault.createFolder(this.settings.folder);
+          } catch (e) {
+            if (e.message !== 'Folder already exists.') {
+              console.error(e);
+            }
+          }
+
+          let file: TFile;
+          const files = this.app.vault.getFiles();
+          for (let i = 0; i < files.length; i++) {
+            if (files[i].path === `${this.settings.folder}/${fileName}`) {
+              file = files[i];
+              break;
+            }
+          }
+          if (!file) {
+            file = await this.app.vault.create(`${this.settings.folder}/${fileName}`, initValue);
+          }
+          setFile(file);
+
+          const data = await this.app.vault.read(file);
+          setContent(data);
+          this.app.vault.modify(file, data);
+        })()
+      }, []);
+
       return [content, setContentToFile];
     }
     // @ts-ignore
     window.useFile = useFile;
 
-    this.registerMarkdownCodeBlockProcessor('antd', (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {					
+    this.registerMarkdownCodeBlockProcessor('antd', (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
       const sourceScript = this.transpileCode(source);
       const evalScript = `
         (async () => {
@@ -104,32 +108,32 @@ export default class Antd extends Plugin {
       eval(evalScript);
     });
 
-    // this.registerMarkdownCodeBlockProcessor('antd-charts', (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-    //   const sourceScript = this.transpileCode(source);
-    //   const evalScript = `
-    //     (async () => {
-    //       ${sourceScript}
-    //     })()
-    //   `
-    //   eval(evalScript);
-    // });
+    this.registerMarkdownCodeBlockProcessor('antd-charts', (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+      const sourceScript = this.transpileCode(source);
+      const evalScript = `
+        (async () => {
+          ${sourceScript}
+        })()
+      `
+      eval(evalScript);
+    });
 
     this.addSettingTab(new AntdSettingTab(this.app, this));
   }
 
   transpileCode(content: string) {
     return Babel.transform(content, {
-        presets: [
-            Babel.availablePresets['react'],
-            [
-                Babel.availablePresets['typescript'],
-                {
-                    onlyRemoveTypeImports: true,
-                    allExtensions: true,
-                    isTSX: true
-                }
-            ]
+      presets: [
+        Babel.availablePresets['react'],
+        [
+          Babel.availablePresets['typescript'],
+          {
+            onlyRemoveTypeImports: true,
+            allExtensions: true,
+            isTSX: true
+          }
         ]
+      ]
     }).code;
   }
 
