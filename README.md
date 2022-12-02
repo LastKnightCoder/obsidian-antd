@@ -422,9 +422,52 @@ root.render(
 
 <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/动画2022-05-29-16-45-45.apng" style="zoom:50%"/>
 
+## Web Components
+
+有的时候需要对一段文字中的某部分进行评论，这个时候我一般会用到 `Popover` 组件，每次评论的时候我都需要将文字放到代码块中
+
+```js
+const { Popover } = antd
+
+const Paragraph = () => {
+	return (
+		<p>
+			The motivation for lazy binding is that a typical application program will call only a handful of the hundreds or thousands of functions exported by a shared library such as <code>libc.so</code>. By deferring the resolution of a function’s address until it is actually called, the dynamic linker can avoid hundreds or thousands of unnecessary relocations at load time. <Popover placement='bottomRight' content='在第一次调用函数时，有一个不可忽视的运行时间开销。'><span className="comments">There is a nontrivial run-time overhead the first time the function is called,</span></Popover> but each call thereafter costs only a single instruction and a memory reference for the indirection.
+		</p>
+	)
+}
+
+const root = ReactDOM.createRoot(el)
+root.render(<Paragraph />)
+```
+
+十分的不方便，特别是文字中如果有行内代码，我还需要将 \`\` 的写法改为 `<code></code>`，另外还需要将 `class` 改为 `className`，十分麻烦，如果可以直接使用标签标注就好了，首先想到的就是 Web Components，我们注册好标签后就可以直接在编辑器中使用了，而不用写代码了。
+
+目前提供了两个 Web Components，分别是 `xt-popover` 与 `xt-artnav`。
+
+### xt-popover
+
+`xt-popover` 的用法与 `Popover` 一样，不同的是不用放赞 `antd` 的代码块里了，可以直接作为标签使用
+
+```js
+<xt-popover content="在第一次调用函数时，有一个不可忽视的运行时间开销。"><span class="comments">There is a nontrivial run-time overhead the first time the function is called,</span></xt-popover>
+```
+
+### xt-artnav
+
+`xt-artnav` 的作用同上面的 `Nav` 组件，用以在不同的文章之间跳转，接收的参数同上
+
+```js
+<xt-artnav prev="xxx" next="yyy"></xt-artnav>
+```
+
 ## CHANGELOG
 
 ### 1.2.0 
 
 - 将 Node 接口替换为 `Obsidian` 的接口，从而支持移动端的能力。
 - 支持 antd/charts，加载速度会被极大拖累。
+
+### 1.3.0
+
+- 支持 Web Components

@@ -20,5 +20,5 @@
   },
   "include": [
     "**/*.ts"
-  ]
+, "web-components/popover.js"  ]
 }

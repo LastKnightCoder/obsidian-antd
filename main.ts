@@ -8,6 +8,9 @@ import * as Babel from '@babel/standalone';
 import Nav from './components/Nav';
 import CodeTab from './components/CodeTab';
 
+import './components/popover';
+import './components/artnav';
+
 interface SaveFolderSettings {
   folder: string;
 }
@@ -30,6 +33,21 @@ const useLocalStorage = (key: string, initValue: string = '') => {
 export default class Antd extends Plugin {
   settings: SaveFolderSettings;
   async onload() {
+    this.app.workspace.onLayoutReady(() => {
+      const source = `
+        DOMPurify.setConfig({
+          ALLOW_UNKNOWN_PROTOCOLS: !0,
+          RETURN_DOM_FRAGMENT: !0,
+          FORBID_TAGS: ["style"],
+          ADD_TAGS: ["xt-popover", "xt-artnav"],
+          ADD_ATTR: ["content", "placement", "noPrev", "prev", "noNext", "next"]
+        });
+      `
+      const script = document.createElement("script");
+      script.textContent = source;
+      (document.head || document.documentElement).appendChild(script);
+    });
+
     await this.loadSettings();
     // @ts-ignore
     window.React = React;
