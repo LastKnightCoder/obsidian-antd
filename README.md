@@ -282,7 +282,7 @@ root.render(<CodeTab />)
 ```
 ````
 
-## useLocalStroage 和 useFile
+## useLocalStroage、useFile 和 useAliOSS
 
 假设你写了一个按钮，每次点击时可以进行加一
 
@@ -354,9 +354,41 @@ root.render(<StatedCounter />)
 
 从使用上，我推荐 useFile，因为 useLocalStorage 不好迁移，如果迁移到新的环境，那么可能之前保存的数据就无效了，如果没有迁移需求的，useLocalStorage 更方便，也不会产生一些数据文件，但是 localStorage 可能有容量限制。
 
->注意：useFile 和 useStorage 都只能保存文本内容，读取到的内容也是字符串，需要自己手动转换。
+> 注意：useFile 和 useStorage 都只能保存文本内容，读取到的内容也是字符串，需要自己手动转换。
 
->建议将文件夹设置为以 `.` 开头，它表示隐藏文件夹，不会出现在文件列表中，方便整理。
+<!-- >建议将文件夹设置为以 `.` 开头，它表示隐藏文件夹，不会出现在文件列表中，方便整理。 -->
+
+useAliOSS 支持将状态保存到阿里 OSS 中，为了使用这一功能，需要在配置中设置
+
+- region
+- accessKeyId
+- accessKeySecret
+- bucket
+
+除此之外，还需要配置为你的 Bucket 为允许跨域，可参考文档 [跨域设置](https://www.alibabacloud.com/help/zh/object-storage-service/latest/configure-cors#concept-pbw-4df-vdb)。
+
+我的配置如下
+
+<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/202212032306132022-12-03-23-06-15.png" style="zoom:50%"/>
+
+useAliOSS 的使用同上面两个类型，同样接收两个参数，文件路径和初始值，注意，这里的状态必须为字符串，你可以使用 `JSON.parse()` 进行解析，示例用法
+
+```js
+const { Button } = antd;
+const Counter = () => {
+	const [count, setCount] = useAliOSS('demos/counter.txt', '0');
+	const handleAdd = () => {
+		const num = parseInt(count);
+		setCount(String(num + 1));
+	}
+	return (
+		<Button type="primary" onClick={handleAdd}>我是{count}</Button>
+	)
+}
+
+const root = ReactDOM.createRoot(el)
+root.render(<Counter />)
+```
 
 ## 内置组件
 
@@ -471,3 +503,7 @@ root.render(<Paragraph />)
 ### 1.3.0
 
 - 支持 Web Components
+
+### 1.4.0
+
+- 支持阿里云OSS

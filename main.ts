@@ -11,12 +11,24 @@ import CodeTab from './components/CodeTab';
 import './components/popover';
 import './components/artnav';
 
+import AliOSS from './AliOSS';
+
+const { message } = antd;
+
 interface SaveFolderSettings {
   folder: string;
+  region: string;
+  accessKeyId: string;
+  accessKeySecret: string;
+  bucket: string;
 }
 
 const DEFAULT_SETTINGS: SaveFolderSettings = {
   folder: '.data',
+  region: '',
+  accessKeyId: '',
+  accessKeySecret: '',
+  bucket: ''
 };
 
 const { useState, useEffect } = React;
@@ -31,6 +43,7 @@ const useLocalStorage = (key: string, initValue: string = '') => {
 }
 
 export default class Antd extends Plugin {
+  aliOSS: any;
   settings: SaveFolderSettings;
   async onload() {
     this.app.workspace.onLayoutReady(() => {
@@ -49,6 +62,10 @@ export default class Antd extends Plugin {
     });
 
     await this.loadSettings();
+
+    const { region, accessKeyId, accessKeySecret, bucket } = this.settings;
+    this.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
+
     // @ts-ignore
     window.React = React;
     // @ts-ignore
@@ -115,6 +132,48 @@ export default class Antd extends Plugin {
     // @ts-ignore
     window.useFile = useFile;
 
+    const useAliOSS = (filePath: string, initValue: string) => {
+      const [content, setContent] = useState(initValue);
+      const updateContent = async (fileContent: string) => {
+        setContent(fileContent);
+        try {
+          await this.aliOSS.updateFile(filePath, fileContent);
+        } catch(e) {
+          message.error('文件内容更新失败，文件路径：' + filePath + '，文件内容：' + fileContent);
+        } 
+      }
+
+      useEffect(() => {
+        (async () => {
+          try {
+            const isExist: boolean = await this.aliOSS.isExistObject(filePath);
+            if (isExist) {
+              try {
+                const res = await this.aliOSS.getFileContent(filePath);
+                const content = res.content.toString();
+                setContent(content);
+              } catch (e) {
+                message.error('初始化获取文件内容失败，路径为：' + filePath);
+              }
+            } else {
+              try {
+                await this.aliOSS.createFile(filePath, content);
+              } catch(e) {
+                message.error('创建文件失败，可能是该路径已经存在，文件路径为：' + filePath);
+              }
+            }
+          } catch (e) {
+            message.error('获取文件信息失败');
+          }
+        })()
+      }, []);
+
+      return [content, updateContent];
+    }
+
+    // @ts-ignore
+    window.useAliOSS = useAliOSS;
+
     this.registerMarkdownCodeBlockProcessor('antd', (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
       const sourceScript = this.transpileCode(source);
       const evalScript = `
@@ -156,7 +215,13 @@ export default class Antd extends Plugin {
   }
 
   onunload() {
-
+    this.aliOSS = null;
+    // @ts-ignore
+    window.antd = undefined;
+    // @ts-ignore
+    window.charts = undefined;
+    // @ts-ignore
+    window.useFile = undefined;
   }
 
   async loadSettings() {
@@ -193,6 +258,58 @@ class AntdSettingTab extends PluginSettingTab {
           this.plugin.settings.folder = value;
           await this.plugin.saveSettings();
         }));
+    
+    new Setting(containerEl)
+    .setName('region')
+    .setDesc('阿里云 Bucket 所在区域')
+    .addText(text => text
+      .setPlaceholder('oss-cn-hangzhou')
+      .setValue(this.plugin.settings.region)
+      .onChange(async (value) => {
+        this.plugin.settings.region = value;
+        await this.plugin.saveSettings();
+        const { region, accessKeyId, accessKeySecret, bucket } = this.plugin.settings;
+        this.plugin.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
+      }));
+
+    new Setting(containerEl)
+    .setName('accessKeyId')
+    .setDesc('AccessKey')
+    .addText(text => text
+      .setPlaceholder('yourAccessKeyId')
+      .setValue(this.plugin.settings.accessKeyId)
+      .onChange(async (value) => {
+        this.plugin.settings.accessKeyId = value;
+        await this.plugin.saveSettings();
+        const { region, accessKeyId, accessKeySecret, bucket } = this.plugin.settings;
+        this.plugin.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
+      }));
+
+    new Setting(containerEl)
+    .setName('accessKeySecret')
+    .setDesc('accessKeySecret')
+    .addText(text => text
+      .setPlaceholder('yourAccessKeySecret')
+      .setValue(this.plugin.settings.accessKeySecret)
+      .onChange(async (value) => {
+        this.plugin.settings.accessKeySecret = value;
+        await this.plugin.saveSettings();
+        const { region, accessKeyId, accessKeySecret, bucket } = this.plugin.settings;
+        this.plugin.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
+      }));
+
+    new Setting(containerEl)
+    .setName('bucket')
+    .setDesc('存储空间')
+    .addText(text => text
+      .setPlaceholder('')
+      .setValue(this.plugin.settings.bucket)
+      .onChange(async (value) => {
+        this.plugin.settings.bucket = value;
+        await this.plugin.saveSettings();
+        const { region, accessKeyId, accessKeySecret, bucket } = this.plugin.settings;
+        this.plugin.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
+      }));
   }
 }
 
