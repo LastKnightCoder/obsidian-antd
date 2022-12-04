@@ -5,7 +5,7 @@
     "inlineSources": true,
     "module": "ESNext",
     "target": "ES6",
-    "allowJs": true,
+    "allowJs": false,
     "noImplicitAny": true,
     "moduleResolution": "node",
     "importHelpers": true,
@@ -19,6 +19,11 @@
     "jsx": "react",
   },
   "include": [
-    "**/*.ts"
-, "web-components/popover.js"  ]
+    "**/*.ts",
+    "**/*.tsx" 
+  ],
+  "exclude": [
+    "main.js",
+    "node_modules"
+  ]
 }

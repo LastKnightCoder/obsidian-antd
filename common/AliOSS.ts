@@ -1,7 +1,8 @@
+// @ts-nocheck
 const OSS = require('ali-oss');
 
 export default class AliOSS {
-  constructor(region, accessKeyId, accessKeySecret, bucket) {
+  constructor(region: string, accessKeyId: string, accessKeySecret: string, bucket: string) {
     if (!region || !accessKeyId || !accessKeySecret || !bucket) {
       this.client = null;
       return;
@@ -14,7 +15,7 @@ export default class AliOSS {
     });
   }
 
-  createFile = async (filePath, fileContent = '') => {
+  createFile = async (filePath: string, fileContent = '') => {
     const headers = {
       'x-oss-storage-class': 'Standard',
       'x-oss-object-acl': 'private',
@@ -25,7 +26,7 @@ export default class AliOSS {
     });
   }
   
-  updateFile = async (filePath, fileContent = '') => {
+  updateFile = async (filePath: string, fileContent = '') => {
     const headers = {
       'x-oss-storage-class': 'Standard',
       'x-oss-object-acl': 'private',
@@ -36,13 +37,13 @@ export default class AliOSS {
     });
   }
   
-  getFileContent = async (filePath) => {
+  getFileContent = async (filePath: string) => {
     return this.client.get(filePath);
   }
 
-  isExistObject = async (name, options = {}) => {
+  isExistObject = async (filePath: string, options = {}) => {
     try {
-        await this.client.head(name, options);
+        await this.client.head(filePath, options);
         return true;
      }  catch (error) {
         return false;

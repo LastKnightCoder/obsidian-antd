@@ -4,14 +4,16 @@ import * as ReactDOM from 'react-dom/client';
 import * as antd from 'antd';
 import * as charts from '@ant-design/charts';
 import * as Babel from '@babel/standalone';
+const fs = require('fs');
+const path = require('path');
 
 import Nav from './components/Nav';
 import CodeTab from './components/CodeTab';
 
-import './components/popover';
-import './components/artnav';
+import './web-components/popover';
+import './web-components/artnav';
 
-import AliOSS from './AliOSS';
+import AliOSS from './common/AliOSS';
 
 const { message } = antd;
 
@@ -43,22 +45,18 @@ const useLocalStorage = (key: string, initValue: string = '') => {
 }
 
 export default class Antd extends Plugin {
-  aliOSS: any;
+  aliOSS: AliOSS;
   settings: SaveFolderSettings;
   async onload() {
     this.app.workspace.onLayoutReady(() => {
-      const source = `
-        DOMPurify.setConfig({
-          ALLOW_UNKNOWN_PROTOCOLS: !0,
-          RETURN_DOM_FRAGMENT: !0,
-          FORBID_TAGS: ["style"],
-          ADD_TAGS: ["xt-popover", "xt-artnav"],
-          ADD_ATTR: ["content", "placement", "noPrev", "prev", "noNext", "next"]
-        });
-      `
-      const script = document.createElement("script");
-      script.textContent = source;
-      (document.head || document.documentElement).appendChild(script);
+      // @ts-ignore
+      DOMPurify.setConfig({
+        ALLOW_UNKNOWN_PROTOCOLS: !0,
+        RETURN_DOM_FRAGMENT: !0,
+        FORBID_TAGS: ["style"],
+        ADD_TAGS: ["xt-popover", "xt-artnav"],
+        ADD_ATTR: ["content", "placement", "prev", "next"]
+      });
     });
 
     await this.loadSettings();
@@ -89,46 +87,41 @@ export default class Antd extends Plugin {
     // @ts-ignore
     window.useLocalStorage = useLocalStorage;
 
-    const useFile = (fileName: string, initValue: string = '') => {
-      const [content, setContent] = useState<string>('');
-      const [file, setFile] = useState<TFile>(null);
-
-      const setContentToFile = (data: string) => {
-        setContent(data);
-        this.app.vault.modify(file, data);
+    const createFolder = (folder: string) => {
+      // @ts-ignore
+      // 获得当前 valut 所在的根路径，然后递归创建文件夹
+      const root = this.app.vault.adapter.basePath;
+      const folderPath = path.join(root, folder);
+      if (!fs.existsSync(folderPath)) {
+        const folders = folder.split('/');
+        
+        let currentPath = root;
+        for (let i = 0; i < folders.length; i++) {
+          currentPath = path.join(currentPath, folders[i]);
+          if (!fs.existsSync(currentPath)) {
+            fs.mkdirSync(currentPath);
+          }
+        }
       }
+    }
 
-      useEffect(() => {
-        (async () => {
-          try {
-            await this.app.vault.createFolder(this.settings.folder);
-          } catch (e) {
-            if (e.message !== 'Folder already exists.') {
-              console.error(e);
-            }
-          }
-
-          let file: TFile;
-          const files = this.app.vault.getFiles();
-          for (let i = 0; i < files.length; i++) {
-            if (files[i].path === `${this.settings.folder}/${fileName}`) {
-              file = files[i];
-              break;
-            }
-          }
-          if (!file) {
-            file = await this.app.vault.create(`${this.settings.folder}/${fileName}`, initValue);
-          }
-          setFile(file);
-
-          const data = await this.app.vault.read(file);
-          setContent(data);
-          this.app.vault.modify(file, data);
-        })()
-      }, []);
-
+    const useFile = (fileName: string, initValue: string) => {
+      createFolder(this.settings.folder);
+      // @ts-ignore
+      const filePath = path.join(this.app.vault.adapter.basePath, this.settings.folder, fileName);
+      if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, initValue);
+      }	
+    
+      const [content, setContent] = useState(fs.readFileSync(filePath, 'utf-8'));
+      const setContentToFile = (data: string) => {
+        fs.writeFileSync(filePath, data);
+        setContent(data);
+      }
+    
       return [content, setContentToFile];
     }
+
     // @ts-ignore
     window.useFile = useFile;
 
@@ -138,9 +131,9 @@ export default class Antd extends Plugin {
         setContent(fileContent);
         try {
           await this.aliOSS.updateFile(filePath, fileContent);
-        } catch(e) {
+        } catch (e) {
           message.error('文件内容更新失败，文件路径：' + filePath + '，文件内容：' + fileContent);
-        } 
+        }
       }
 
       useEffect(() => {
@@ -158,7 +151,7 @@ export default class Antd extends Plugin {
             } else {
               try {
                 await this.aliOSS.createFile(filePath, content);
-              } catch(e) {
+              } catch (e) {
                 message.error('创建文件失败，可能是该路径已经存在，文件路径为：' + filePath);
               }
             }
@@ -258,58 +251,58 @@ class AntdSettingTab extends PluginSettingTab {
           this.plugin.settings.folder = value;
           await this.plugin.saveSettings();
         }));
-    
-    new Setting(containerEl)
-    .setName('region')
-    .setDesc('阿里云 Bucket 所在区域')
-    .addText(text => text
-      .setPlaceholder('oss-cn-hangzhou')
-      .setValue(this.plugin.settings.region)
-      .onChange(async (value) => {
-        this.plugin.settings.region = value;
-        await this.plugin.saveSettings();
-        const { region, accessKeyId, accessKeySecret, bucket } = this.plugin.settings;
-        this.plugin.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
-      }));
 
     new Setting(containerEl)
-    .setName('accessKeyId')
-    .setDesc('AccessKey')
-    .addText(text => text
-      .setPlaceholder('yourAccessKeyId')
-      .setValue(this.plugin.settings.accessKeyId)
-      .onChange(async (value) => {
-        this.plugin.settings.accessKeyId = value;
-        await this.plugin.saveSettings();
-        const { region, accessKeyId, accessKeySecret, bucket } = this.plugin.settings;
-        this.plugin.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
-      }));
+      .setName('region')
+      .setDesc('阿里云 Bucket 所在区域')
+      .addText(text => text
+        .setPlaceholder('oss-cn-hangzhou')
+        .setValue(this.plugin.settings.region)
+        .onChange(async (value) => {
+          this.plugin.settings.region = value;
+          await this.plugin.saveSettings();
+          const { region, accessKeyId, accessKeySecret, bucket } = this.plugin.settings;
+          this.plugin.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
+        }));
 
     new Setting(containerEl)
-    .setName('accessKeySecret')
-    .setDesc('accessKeySecret')
-    .addText(text => text
-      .setPlaceholder('yourAccessKeySecret')
-      .setValue(this.plugin.settings.accessKeySecret)
-      .onChange(async (value) => {
-        this.plugin.settings.accessKeySecret = value;
-        await this.plugin.saveSettings();
-        const { region, accessKeyId, accessKeySecret, bucket } = this.plugin.settings;
-        this.plugin.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
-      }));
+      .setName('accessKeyId')
+      .setDesc('AccessKey')
+      .addText(text => text
+        .setPlaceholder('yourAccessKeyId')
+        .setValue(this.plugin.settings.accessKeyId)
+        .onChange(async (value) => {
+          this.plugin.settings.accessKeyId = value;
+          await this.plugin.saveSettings();
+          const { region, accessKeyId, accessKeySecret, bucket } = this.plugin.settings;
+          this.plugin.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
+        }));
 
     new Setting(containerEl)
-    .setName('bucket')
-    .setDesc('存储空间')
-    .addText(text => text
-      .setPlaceholder('')
-      .setValue(this.plugin.settings.bucket)
-      .onChange(async (value) => {
-        this.plugin.settings.bucket = value;
-        await this.plugin.saveSettings();
-        const { region, accessKeyId, accessKeySecret, bucket } = this.plugin.settings;
-        this.plugin.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
-      }));
+      .setName('accessKeySecret')
+      .setDesc('accessKeySecret')
+      .addText(text => text
+        .setPlaceholder('yourAccessKeySecret')
+        .setValue(this.plugin.settings.accessKeySecret)
+        .onChange(async (value) => {
+          this.plugin.settings.accessKeySecret = value;
+          await this.plugin.saveSettings();
+          const { region, accessKeyId, accessKeySecret, bucket } = this.plugin.settings;
+          this.plugin.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
+        }));
+
+    new Setting(containerEl)
+      .setName('bucket')
+      .setDesc('存储空间')
+      .addText(text => text
+        .setPlaceholder('')
+        .setValue(this.plugin.settings.bucket)
+        .onChange(async (value) => {
+          this.plugin.settings.bucket = value;
+          await this.plugin.saveSettings();
+          const { region, accessKeyId, accessKeySecret, bucket } = this.plugin.settings;
+          this.plugin.aliOSS = new AliOSS(region, accessKeyId, accessKeySecret, bucket);
+        }));
   }
 }
 

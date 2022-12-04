@@ -1,9 +1,15 @@
 import styles from "./index.module.css";
+import * as React from "react";
 
-const Nav = (props) => {
+interface INavProps {
+  prev: string;
+  next: string;
+}
+
+const Nav = (props: INavProps) => {
   return (
     <div className={styles.nav}>
-      {!props.noPrev ?
+      {props.prev ?
         <a
           href={`${props.prev}.md`}
           className={`${styles.navItem} internal-link`}
@@ -28,7 +34,7 @@ const Nav = (props) => {
           </svg>
           <span>{props.prev}</span>
         </a> : null}
-      {!props.noNext ?
+      {props.next ?
         <a
           href={`${props.next}.md`}
           className={`${styles.navItem} internal-link`}

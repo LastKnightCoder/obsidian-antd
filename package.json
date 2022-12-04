@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-antd",
-	"version": "1.4.0",
+	"version": "1.5.0",
 	"description": "Using Antd Design Component In Your Obsidian",
 	"main": "main.js",
 	"scripts": {
@@ -34,7 +34,9 @@
 		"antd": "^4.19.5",
 		"css-tree": "^2.1.0",
 		"esbuild-css-modules-plugin": "^2.2.16",
+		"fs-extra": "^11.1.0",
 		"react": "^18.0.0",
-		"react-dom": "^18.0.0"
+		"react-dom": "^18.0.0",
+		"react-from-dom": "^0.6.2"
 	}
 }

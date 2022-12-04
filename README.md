@@ -356,7 +356,7 @@ root.render(<StatedCounter />)
 
 > 注意：useFile 和 useStorage 都只能保存文本内容，读取到的内容也是字符串，需要自己手动转换。
 
-<!-- >建议将文件夹设置为以 `.` 开头，它表示隐藏文件夹，不会出现在文件列表中，方便整理。 -->
+>建议将文件夹设置为以 `.` 开头，它表示隐藏文件夹，不会出现在文件列表中，方便整理。
 
 useAliOSS 支持将状态保存到阿里 OSS 中，为了使用这一功能，需要在配置中设置
 
@@ -400,14 +400,12 @@ root.render(<Counter />)
 
 <!-- <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/动画2022-05-29-16-25-40.apng" style="zoom:50%; border-radius: 8px; box-shadow: 0 0 10px 0 rgba(0, 0, 0, .1);"/> -->
 
-该组件接收四个参数
+该组件接收两个参数，当不传 `prev` 时，不显示上一篇，当不传 `next` 时，不显示下一篇。
 
 | 参数 | 含义 |
 | --- | --- |
 | prev | 上一篇文章 |
 | next | 下一篇文章 |
-| noPrev | 当设置此参数时，不显示上一篇，用于第一篇文章 |
-| noNext | 当设置此参数时，不显示下一篇，用于最后一篇文章 |
 
 使用方法
 
@@ -415,11 +413,13 @@ root.render(<Counter />)
 ```antd
 const { Nav} = components
 const root = React.createRoot(el)
-el.render(<Nav noPrev next="xxx" />)
+el.render(<Nav next="xxx" />)
 ```
 ````
 
->参数不需加 `.md`
+> 参数不需加 `.md`
+
+<del>
 
 ### CodeTab
 
@@ -452,7 +452,9 @@ root.render(
 ```
 ````
 
-<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/动画2022-05-29-16-45-45.apng" style="zoom:50%"/>
+<!-- <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/动画2022-05-29-16-45-45.apng" style="zoom:50%"/> -->
+
+</del>
 
 ## Web Components
 
@@ -462,11 +464,13 @@ root.render(
 const { Popover } = antd
 
 const Paragraph = () => {
-	return (
-		<p>
-			The motivation for lazy binding is that a typical application program will call only a handful of the hundreds or thousands of functions exported by a shared library such as <code>libc.so</code>. By deferring the resolution of a function’s address until it is actually called, the dynamic linker can avoid hundreds or thousands of unnecessary relocations at load time. <Popover placement='bottomRight' content='在第一次调用函数时，有一个不可忽视的运行时间开销。'><span className="comments">There is a nontrivial run-time overhead the first time the function is called,</span></Popover> but each call thereafter costs only a single instruction and a memory reference for the indirection.
-		</p>
-	)
+  return (
+    <p>
+      the dynamic <Popover placement='bottomRight' content='在第一次调用函数时，有一个不可忽视的运行时间开销。'>
+        <span className="comments">There is nontrivial run-time</span>
+      </Popover>but each call thereafter costs only a single instruction and a memory reference for the indirection.
+    </p>
+  )
 }
 
 const root = ReactDOM.createRoot(el)
@@ -507,3 +511,9 @@ root.render(<Paragraph />)
 ### 1.4.0
 
 - 支持阿里云OSS
+
+### 1.5.0
+
+- 由于 Obsidian 的文件接口访问不了隐藏文件夹，所以弃用，使用 fs 的接口，因此 useFile 不能在移动端使用
+- 修复 xt-artnav 的 bug
+
