@@ -8,7 +8,10 @@ const fs = require('fs');
 const path = require('path');
 
 import Nav from './components/Nav';
+import NavCard from './components/NavCard';
+import NavList from './components/NavList';
 import CodeTab from './components/CodeTab';
+import VideoNote from 'components/VideoNote';
 
 import './web-components/popover';
 import './web-components/artnav';
@@ -77,7 +80,13 @@ export default class Antd extends Plugin {
     // @ts-ignore
     window.components.Nav = Nav;
     // @ts-ignore
+    window.components.NavCard = NavCard;
+    // @ts-ignore
+    window.components.NavList = NavList;
+    // @ts-ignore
     window.components.CodeTab = CodeTab;
+    // @ts-ignore
+    window.components.VideoNote = VideoNote;
     // @ts-ignore
     window.renderMarkdown = async (source: string) => {
       const tempEl = createDiv();

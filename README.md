@@ -421,6 +421,34 @@ el.render(<Nav next="xxx" />)
 
 <del>
 
+### NavList
+
+使用方法
+
+```js
+const { NavList } = window.components
+
+const data = [{
+	title: 'Web Component',
+	desc: '介绍 Web Component'
+}, {
+	title: 'test',
+	desc: 'test'
+}, {
+	title: 'render code',
+	desc: 'tab'
+}, {
+	title: 'antd',
+	desc: 'tab xxxxxxxxxxxxxxxxxxxxxxxxxx'
+}]
+
+ReactDOM.createRoot(el).render(<NavList data={data} />)
+```
+
+<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/202212061852342022-12-06-18-52-36.png" style="zoom:50%"/>
+
+自适应布局，最小宽度为 400，尽可能多的放。
+
 ### CodeTab
 
 用于显示代码块的组件，第一个 Tab 是代码，第二个是代码对应的内容，通过 `children` 传递。
@@ -517,3 +545,6 @@ root.render(<Paragraph />)
 - 由于 Obsidian 的文件接口访问不了隐藏文件夹，所以弃用，使用 fs 的接口，因此 useFile 不能在移动端使用
 - 修复 xt-artnav 的 bug
 
+### 1.5.2
+
+- 添加 NavList 组件，仿照 Docusaurus

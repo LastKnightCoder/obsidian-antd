@@ -1,0 +1,37 @@
+.navCard[data-nav-card] {
+  --text-color: var(--text-normal, rgb(14, 14, 14));
+  --border-color: transparent;
+  padding: 32px;
+  color: var(--text-color);
+  display: flex;
+  gap: 16px;
+  flex-direction: column;
+  box-shadow: 0 1.5px 3px 0 rgb(0 0 0 / 15%);
+  border: 1px solid var(--border-color);
+  border-radius: 16px !important;
+  transition: all .2s ease;
+}
+
+.navCard[data-nav-card]:hover {
+  --border-color: #1a66ff !important;
+}
+
+:global(.theme-dark) .navCard[data-nav-card] {
+  --text-color: var(--text-normal, rgba(242, 248, 253, 0.9));
+  --border-color: #444950;
+}
+
+.navCard[data-nav-card] .title {
+  font-weight: bold;
+  font-size: 30px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.navCard[data-nav-card] .desc {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-left: 5px;
+}

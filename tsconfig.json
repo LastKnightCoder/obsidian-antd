@@ -21,7 +21,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx" 
-  ],
+, "components/MilkDownEditor/index.jsx"  ],
   "exclude": [
     "main.js",
     "node_modules"
