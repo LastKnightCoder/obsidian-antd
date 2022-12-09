@@ -12,6 +12,7 @@ import NavCard from './components/NavCard';
 import NavList from './components/NavList';
 import CodeTab from './components/CodeTab';
 import VideoNote from 'components/VideoNote';
+import getEdittableFromRoot from 'components/EditableTable';
 
 import './web-components/popover';
 import './web-components/artnav';
@@ -87,6 +88,8 @@ export default class Antd extends Plugin {
     window.components.CodeTab = CodeTab;
     // @ts-ignore
     window.components.VideoNote = VideoNote;
+    // @ts-ignore
+    window.components.EditableTable = getEdittableFromRoot(this.app.vault.adapter.basePath);
     // @ts-ignore
     window.renderMarkdown = async (source: string) => {
       const tempEl = createDiv();

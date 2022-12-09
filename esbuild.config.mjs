@@ -2,6 +2,7 @@ import esbuild from "esbuild";
 import process from "process";
 import builtins from 'builtin-modules'
 import cssModulePlugin from 'esbuild-css-modules-plugin'
+import { lessLoader } from "esbuild-plugin-less";
 
 const banner =
 `/*
@@ -50,5 +51,7 @@ esbuild.build({
 	sourcemap: prod ? false : 'inline',
 	treeShaking: true,
 	outfile: 'main.js',
-	plugins: [cssModulePlugin()]
+	plugins: [cssModulePlugin(), lessLoader({
+		javascriptEnabled: true
+	})]
 }).catch(() => process.exit(1));

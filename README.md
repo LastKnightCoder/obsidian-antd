@@ -548,3 +548,7 @@ root.render(<Paragraph />)
 ### 1.5.2
 
 - 添加 NavList 组件，仿照 Docusaurus
+
+### 1.6.0
+
+- 高级表格的支持
