@@ -56,8 +56,8 @@ const EditableCell = <T,>({
           name={dataIndex}
         >
           <Input ref={inputRef} onPressEnter={save} onBlur={save} style={{
-            maxWidth: '100%',
-            minWidth: '100%',
+            maxWidth: '80%',
+            minWidth: '80%',
             padding: '8px 16px',
             height: '48px',
             outline: 'none',

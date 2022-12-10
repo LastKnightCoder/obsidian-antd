@@ -11,9 +11,16 @@ import {
 } from 'antd';
 import * as React from 'react';
 import EditableCell from 'components/EditableCell';
+
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import DraggableRow from 'components/DraggableRow';
+
 import useFile from 'hooks/useFile';
-const { useState, useRef } = React;
+const { useState, useRef, useEffect, useCallback } = React;
 const { useForm } = Form;
+
+import update from 'immutability-helper';
 const path = require('path');
 
 type EditableTableProps = Parameters<typeof Table>[0];
@@ -38,6 +45,21 @@ const EditableTable = (props: { path: string }) => {
 
   const [showColumnEditor, setShowColumnEditor] = useState<boolean>(false);
   const [form] = useForm();
+
+  const [isDark, setIsDark] = useState(document.body.classList.contains('theme-dark'));
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.body.classList.contains('theme-dark'));
+    });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => {
+      observer.disconnect()
+    }
+  }, []);
 
   const handleSave = (row: Data) => {
     const newData = [...dataSource];
@@ -106,16 +128,43 @@ const EditableTable = (props: { path: string }) => {
     }]);
   }
 
-  const dark = document.body.classList.contains('theme-dark');
+  const moveRow = useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      const dragRow = dataSource[dragIndex];
+      const newData = update(dataSource, {
+        $splice: [
+          [dragIndex, 1],
+          [hoverIndex, 0, dragRow],
+        ],
+      });
+      
+      setDataSource(newData);
+      setContent(JSON.stringify({
+        dataSource: newData,
+        columns: editableColumns,
+        keyCounter: keyCounter.current
+      }));
+    },
+    [dataSource],
+  );
+
+  const components = {
+    body: {
+      row: DraggableRow,
+      cell: EditableCell<Data>
+    }
+  }
 
   return (
     <ConfigProvider theme={{
-      algorithm: dark ? theme.darkAlgorithm : theme.defaultAlgorithm
+      algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm
     }}>
-      <Space size={'middle'} style={{ marginLeft: 'auto', marginBottom: '20px' }}>
-        <Button type='default' onClick={handleAddColumn}>添加列</Button>
-        <Button type='primary' onClick={handleAddRow}>添加行</Button>
-      </Space>
+      <div style={{ display: 'flex' }}>
+        <Space size={'middle'} style={{ marginLeft: 'auto', marginBottom: '20px' }}>
+          <Button type='default' onClick={handleAddColumn}>添加列</Button>
+          <Button type='primary' onClick={handleAddRow}>添加行</Button>
+        </Space>
+      </div>
       <Drawer
         title="创建新的列"
         width={400}
@@ -140,17 +189,25 @@ const EditableTable = (props: { path: string }) => {
           </Form.Item>
         </Form>
       </Drawer>
-      {columns.length > 0 ? <Table
-        columns={columns as ColumnTypes}
-        dataSource={dataSource}
-        pagination={false}
-        components={{
-          body: {
-            cell: EditableCell<Data>
-          }
-        }}
-        rowKey='key'
-      /> : <Empty description={false} />}
+      {columns.length > 0 ? (
+        <DndProvider backend={HTML5Backend}>
+          <Table
+            columns={columns as ColumnTypes}
+            dataSource={dataSource}
+            pagination={false}
+            bordered
+            components={components}
+            onRow={(_, index) => {
+              const attr = {
+                index,
+                moveRow,
+              };
+              return attr as React.HTMLAttributes<any>;
+            }}
+            rowKey='key'
+          />
+        </DndProvider>
+      ) : <Empty description={false} />}
     </ConfigProvider>
   );
 };

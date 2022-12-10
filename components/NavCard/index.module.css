@@ -10,6 +10,7 @@
   border: 1px solid var(--border-color);
   border-radius: 16px !important;
   transition: all .2s ease;
+  text-decoration: none !important;
 }
 
 .navCard[data-nav-card]:hover {

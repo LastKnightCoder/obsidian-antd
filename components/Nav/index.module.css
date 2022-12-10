@@ -16,6 +16,7 @@
   box-sizing: border-box;
   transition: all 0.2s;
   color: var(--text-normal) !important;
+  text-decoration: none !important;
 }
 .navItem:hover {
   color: #1a66ff !important;

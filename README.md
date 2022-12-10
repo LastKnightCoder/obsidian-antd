@@ -2,7 +2,7 @@
 
 在 Obsidian 中使用 Ant Design 中的模块，方法如下
 
-````
+````js
 ```antd
 const { Button } = antd
 const root = ReactDOM.createRoot(el)
@@ -188,7 +188,7 @@ root.render(lineEl);
 
 ## renderMarkdown
 
-假如你希望写一个 Tab，用来切换不同的代码块
+假如你希望写一个 Tabs，用来切换不同的代码块
 
 <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/ImgHosting3@master/动画2022-04-20-19-12-24.gif" style="zoom:50%"/>
 
@@ -234,9 +234,7 @@ root.render(<CodeTab />)
 
 但是你会发现出来的是纯文本
 
-
 <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/ImgHosting3@master/动画2022-04-20-19-15-54.gif" style="zoom:50%"/>
-
 
 这是因为在 `antd` 代码块里面的内容不会被解析，为了在组件里面使用 Markdown 的能力，我们向全局暴露了一个方法 `renderMarkdown`，它接收 Markdown 字符，输出对应的 `html` 字符，并且这是一个异步的方法，返回的是一个 `Promise`。
 
@@ -282,7 +280,7 @@ root.render(<CodeTab />)
 ```
 ````
 
-## useLocalStroage、useFile 和 useAliOSS
+## 状态持久化
 
 假设你写了一个按钮，每次点击时可以进行加一
 
@@ -310,60 +308,14 @@ root.render(<Counter />)
 
 - useLocalStorage：将数据保存在 LocalStorage 中，需要提供键（需保证不同组件唯一）和初始值
 - useFile：将数据保存在文件中，需要提供一个文件名以及初始值，并且你需要在设置中设置数据保存的路径，默认保存在笔记的根目录下。
+  - 建议将文件夹设置为以 `.` 开头，它表示隐藏文件夹，不会出现在文件列表中，方便整理。
+- useAliOSS：将数据保存在阿里 OSS 中，需要提供路径名和初始值，并且需要子啊设置中配置密钥等信息
+  - region
+  - accessKeyId
+  - accessKeySecret
+  - bucket
 
-useLocalStorage 使用示例：
-
-````
-```antd
-const { Button } = antd
-const StatedCounter = () => {
-  const [counter, setCounter] = useLocalStorage('counter', 0)
-
-  const handleClick = () => {
-    setCounter(parseInt(counter) + 1)
-  }
-  return (
-    <Button type="primary" onClick={handleClick}>{counter}++</Button>
-  )
-}
-
-const root = ReactDOM.createRoot(el)
-root.render(<StatedCounter />)
-```
-````
-
-useFile 使用示例
-
-````
-```antd
-const { Button } = antd
-const StatedCounter = () => {
-  const [counter, setCounter] = useFile('counter.md', 0)
-  const handleClick = () => {
-    setCounter(parseInt(counter) + 1 + "")
-  }
-  return (
-    <Button type="primary" onClick={handleClick}>{counter}++</Button>
-  )
-}
-
-const root = ReactDOM.createRoot(el)
-root.render(<StatedCounter />)
-```
-````
-
-从使用上，我推荐 useFile，因为 useLocalStorage 不好迁移，如果迁移到新的环境，那么可能之前保存的数据就无效了，如果没有迁移需求的，useLocalStorage 更方便，也不会产生一些数据文件，但是 localStorage 可能有容量限制。
-
-> 注意：useFile 和 useStorage 都只能保存文本内容，读取到的内容也是字符串，需要自己手动转换。
-
-> 建议将文件夹设置为以 `.` 开头，它表示隐藏文件夹，不会出现在文件列表中，方便整理。
-
-useAliOSS 支持将状态保存到阿里 OSS 中，为了使用这一功能，需要在配置中设置
-
-- region
-- accessKeyId
-- accessKeySecret
-- bucket
+  每个配置信息的含义可参见阿里 OSS 的文档。
 
 除此之外，还需要配置为你的 Bucket 为允许跨域，可参考文档 [跨域设置](https://www.alibabacloud.com/help/zh/object-storage-service/latest/configure-cors#concept-pbw-4df-vdb)。
 
@@ -373,22 +325,64 @@ useAliOSS 支持将状态保存到阿里 OSS 中，为了使用这一功能，�
 
 useAliOSS 的使用同上面两个类型，同样接收两个参数，文件路径和初始值，注意，这里的状态必须为字符串，你可以使用 `JSON.parse()` 进行解析，示例用法
 
+useLocalStorage 使用示例：
+
+```js
+const { Button } = antd
+const StatedCounter = () => {
+  const [counter, setCounter] = useLocalStorage('counter', '0')
+
+  const handleClick = () => {
+    setCounter(String(parseInt(counter) + 1))
+  }
+  return (
+    <Button type="primary" onClick={handleClick}>{counter}++</Button>
+  )
+}
+
+const root = ReactDOM.createRoot(el)
+root.render(<StatedCounter />)
+```
+
+useFile 使用示例：
+
+```js
+const { Button } = antd
+const StatedCounter = () => {
+  const [counter, setCounter] = useFile('counter.md', '0')
+  const handleClick = () => {
+    setCounter(String(parseInt(counter) + 1))
+  }
+  return (
+    <Button type="primary" onClick={handleClick}>{counter}++</Button>
+  )
+}
+
+const root = ReactDOM.createRoot(el)
+root.render(<StatedCounter />)
+```
+
+useAliOSS 使用示例：
+
 ```js
 const { Button } = antd;
 const Counter = () => {
-	const [count, setCount] = useAliOSS('demos/counter.txt', '0');
-	const handleAdd = () => {
-		const num = parseInt(count);
-		setCount(String(num + 1));
+	const [counter, setCounter] = useAliOSS('demos/counter.txt', '0');
+	const handleClick = () => {
+		setCount(String(parseInt(counter) + 1));
 	}
 	return (
-		<Button type="primary" onClick={handleAdd}>我是{count}</Button>
+		<Button type="primary" onClick={handleClick}>{counter}++</Button>
 	)
 }
 
 const root = ReactDOM.createRoot(el)
 root.render(<Counter />)
 ```
+
+从使用上，我推荐 useFile 和 useAliOSS，因为 useLocalStorage 不好迁移，如果迁移到新的环境，那么可能之前保存的数据就无效了，如果没有迁移需求的，useLocalStorage 更方便，也不会产生一些数据文件，但是 localStorage 可能有容量限制。
+
+> 注意：useFile、useStorage 以及 useAliOSS 都只能保存文本内容，读取到的内容也是字符串，需要自己手动转换。
 
 ## 内置组件
 
@@ -409,21 +403,17 @@ root.render(<Counter />)
 
 使用方法
 
-````
-```antd
+```js
 const { Nav} = components
 const root = React.createRoot(el)
 el.render(<Nav next="xxx" />)
 ```
-````
 
 > 参数不需加 `.md`
 
-<del>
-
 ### NavList
 
-使用方法
+该组件是受到 React 文档库 Docusaurus 的启发，使用方法如下：
 
 ```js
 const { NavList } = window.components
@@ -449,7 +439,28 @@ ReactDOM.createRoot(el).render(<NavList data={data} />)
 
 自适应布局，最小宽度为 400，尽可能多的放。
 
+### EditableTable
+
+这个是为了解决 Markdown 语法创建表格的问题，使用 Markdown 语法创建表格不如 Typora 中的可视化编辑表格方便，因此创建这个组件，使用这个组件可以可视化编辑表格。
+
+表格的信息存放在其它文件中（内部使用了 useFile 进行持久化），因此使用该组件需要提供数据保存的路径，使用方法如下
+
+```js
+const { EditableTable } = components;
+ReactDOM.createRoot(el).render(<EditableTable path=".antd/table.json" />);
+```
+
+然后就可以愉快的编辑表格了，演示效果如下：
+
+<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/et52022-12-10-15-08-47.webp" style="zoom:50%"/>
+
+目前还不支持可视化删除列和行，需要编辑内容文件（低级选手不建议），这个功能后续会抓紧补上，也会慢慢的添加更多功能。
+
+<del>
+
 ### CodeTab
+
+> 该组件通用性不强，即将废弃。
 
 用于显示代码块的组件，第一个 Tab 是代码，第二个是代码对应的内容，通过 `children` 传递。
 
@@ -460,10 +471,9 @@ ReactDOM.createRoot(el).render(<NavList data={data} />)
 | html | 代码对应的 HTML，可使用提供的 renderMarkdown 进行解析 |
 | tabNames | 为一个包含两个元素数组，表示两个 Tab 的名称 |
 
-使用方法
+使用方法：
 
-````
-```antd
+```js
 const { CodeTab } = components
 
 const code = `\`\`\`html
@@ -478,11 +488,84 @@ root.render(
   </CodeTab>
 )
 ```
-````
 
 <!-- <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/动画2022-05-29-16-45-45.apng" style="zoom:50%"/> -->
 
 </del>
+
+## 主题
+
+升级到 Ant Design 5.0 以后，支持黑暗主题了
+
+```js
+const { theme, ConfigProvider } = antd;
+
+const () => {
+  return (
+    <ConfigProvider theme={{
+        algorithm: theme.darkAlgorithm
+      }}>
+      // Ant Design 组件
+    </ConfigProvider>
+  )
+}
+```
+
+本插件提供了 `ThemeProvider` 组件，它可以监听主题的变化，从而实时的改变 Antd Design 组件的配色，使用方法如下
+
+```js
+const { Tabs } = antd;
+const { ThemeProvider } = components;
+const ThemeTabs = ThemeProvider(Tabs);
+
+// ThemeTabs 如 Tabs 组件使用即可，并且具有跟随主题的能力
+// 并且 ThemeTabs 包含的所有子组件均具有跟随主题的能力
+```
+
+例子：
+
+```js
+const { Tabs } = antd;
+const { TabPane } = Tabs;
+const { ThemeProvider } = components;
+const ThemeTabs = ThemeProvider(Tabs);
+
+const code1 = `\`\`\` C
+#include<stdio.h>
+int main()
+{
+	printf("Hello World");
+	return 0;
+}
+\`\`\``
+
+const code2 = `\`\`\` JavaScript
+const a = 1
+const b = 2
+const c = a + b
+console.log(c)
+\`\`\``
+
+const html1 = await renderMarkdown(code1)
+const html2 = await renderMarkdown(code2)
+
+
+const CodeTab = () => (
+  <ThemeTabs defaultActiveKey="1">
+    <TabPane tab="C" key="1">
+      <div dangerouslySetInnerHTML={{ __html: html1 }} />
+    </TabPane>
+    <TabPane tab="JavaScript" key="2">
+      <div dangerouslySetInnerHTML={{ __html: html2 }} />
+    </TabPane>
+  </ThemeTabs>
+);
+
+const root = ReactDOM.createRoot(el)
+root.render(<CodeTab />)
+```
+
+<img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/image-for-2022@master/ant52022-12-10-14-53-45.webp" style="zoom:50%"/>
 
 ## Web Components
 
@@ -511,7 +594,7 @@ root.render(<Paragraph />)
 
 ### xt-popover
 
-`xt-popover` 的用法与 `Popover` 一样，不同的是不用放赞 `antd` 的代码块里了，可以直接作为标签使用
+`xt-popover` 的用法与 `Popover` 一样，不同的是不用放在 `antd` 的代码块里了，可以直接作为标签使用
 
 ```js
 <xt-popover content="在第一次调用函数时，有一个不可忽视的运行时间开销。"><span class="comments">There is a nontrivial run-time overhead the first time the function is called,</span></xt-popover>
@@ -553,3 +636,7 @@ root.render(<Paragraph />)
 
 - 高级表格的支持
 - Antd 升级到 5.0，支持黑暗主题以及支持 CSS In JS，不会有全局样式影响到别处了
+
+### 1.6.3
+
+- Bug fix
