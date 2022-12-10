@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-antd",
-	"version": "1.6.1",
+	"version": "1.6.2",
 	"description": "Using Antd Design Component In Your Obsidian",
 	"main": "main.js",
 	"scripts": {

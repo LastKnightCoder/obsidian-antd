@@ -22,7 +22,8 @@ jobs:
       - name: Build
         id: build
         run: |
-          npm install
+          npm install -g pnpm
+          pnpm install
           npm run build
           mkdir ${{ env.PLUGIN_NAME }}
           cp main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}
