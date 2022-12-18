@@ -60,7 +60,7 @@ export default class Antd extends Plugin {
         RETURN_DOM_FRAGMENT: !0,
         FORBID_TAGS: ["style"],
         ADD_TAGS: ["xt-popover", "xt-artnav"],
-        ADD_ATTR: ["content", "placement", "prev", "next"]
+        ADD_ATTR: ["content", "placement", "maxWidth", "prev", "next", "style"]
       });
     });
 

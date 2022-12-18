@@ -195,8 +195,7 @@ root.render(lineEl);
 
 你会使用 Antd 的 Tabs 组件和 TabPane 组件
 
-````
-```antd
+```js
 const { Tabs } = antd;
 const { TabPane } = Tabs;
 
@@ -230,7 +229,6 @@ const CodeTab = () => (
 const root = ReactDOM.createRoot(el)
 root.render(<CodeTab />)
 ```
-````
 
 但是你会发现出来的是纯文本
 
@@ -240,8 +238,7 @@ root.render(<CodeTab />)
 
 所以我们可以修改写法如下，就可以得到想要的效果了
 
-````
-```antd
+```js
 const { Tabs } = antd;
 const { TabPane } = Tabs;
 
@@ -278,14 +275,12 @@ const CodeTab = () => (
 const root = ReactDOM.createRoot(el)
 root.render(<CodeTab />)
 ```
-````
 
 ## 状态持久化
 
 假设你写了一个按钮，每次点击时可以进行加一
 
-````
-```antd
+```js
 const { useState } = React
 const { Button } = antd
 const Counter = () => {
@@ -300,7 +295,6 @@ const Counter = () => {
 const root = ReactDOM.createRoot(el)
 root.render(<Counter />)
 ```
-````
 
 <img src="https://cdn.jsdelivr.net/gh/LastKnightCoder/ImgHosting3@master/useState2022-04-21-14-29-40.gif" style="zoom:50%"/>
 
@@ -600,6 +594,12 @@ root.render(<Paragraph />)
 <xt-popover content="在第一次调用函数时，有一个不可忽视的运行时间开销。"><span class="comments">There is a nontrivial run-time overhead the first time the function is called,</span></xt-popover>
 ```
 
+`xt-popover` 支持三个属性
+
+- content：气泡中的内容，与 Popover 组件不同的是，不支持 JSX，只支持纯文本
+- placement：气泡的未知，默认为 `top`，即出现在上部，可选
+- maxWidth：气泡的最大宽度，可选
+
 ### xt-artnav
 
 `xt-artnav` 的作用同上面的 `Nav` 组件，用以在不同的文章之间跳转，接收的参数同上
@@ -640,3 +640,7 @@ root.render(<Paragraph />)
 ### 1.6.3
 
 - Bug fix
+
+### 1.6.4
+
+- 为 xt-popover 增加 maxWidth 属性
