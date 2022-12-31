@@ -450,6 +450,14 @@ ReactDOM.createRoot(el).render(<EditableTable path=".antd/table.json" />);
 
 目前还不支持可视化删除列和行，需要编辑内容文件（低级选手不建议），这个功能后续会抓紧补上，也会慢慢的添加更多功能。
 
+支持代码块 `antd-table` 创建可编辑表格，其中的内容是表格内容保存的路径
+
+````js
+```antd-table
+.antd/table.json
+```
+````
+
 <del>
 
 ### CodeTab
@@ -644,3 +652,8 @@ root.render(<Paragraph />)
 ### 1.6.4
 
 - 为 xt-popover 增加 maxWidth 属性
+
+### 1.6.5
+
+- 添加 `antd-table` 代码块，快速创建可编辑表格
+

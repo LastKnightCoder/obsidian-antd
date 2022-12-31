@@ -74,7 +74,7 @@ const EditableTable = (props: { path: string }) => {
       dataSource: newData,
       columns: editableColumns,
       keyCounter: keyCounter.current
-    }));
+    }, undefined, 2));
   }
 
   const columns = editableColumns.map(column => {
@@ -143,7 +143,7 @@ const EditableTable = (props: { path: string }) => {
         dataSource: newData,
         columns: editableColumns,
         keyCounter: keyCounter.current
-      }));
+      }, undefined, 2));
     },
     [dataSource],
   );
@@ -212,12 +212,12 @@ const EditableTable = (props: { path: string }) => {
   );
 };
 
-const getEditableFromRoot = (root: string) => {
+const getEditableTableFromRoot = (root: string) => {
   return (props: { path: string }) => {
     const filePath = path.join(root, props.path);
     return <EditableTable path={filePath} />
   }
 }
 
-export default getEditableFromRoot;
+export default getEditableTableFromRoot;
 

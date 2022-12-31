@@ -13,8 +13,6 @@ export default class MyPopover extends HTMLElement {
     const maxWidth = this.getAttribute("maxWidth") || "";
     const contentStyle = maxWidth ? { maxWidth } : {};
 
-    console.log('maxWidth', maxWidth);
-
     const child = convert(this.innerHTML) as React.ReactNode;
     
     ReactDOM.createRoot(this).render(

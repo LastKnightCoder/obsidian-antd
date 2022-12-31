@@ -13,7 +13,7 @@ import NavList from './components/NavList';
 import CodeTab from './components/CodeTab';
 import VideoNote from 'components/VideoNote';
 import ThemeProvider from 'components/ThemeProvider';
-import getEdittableFromRoot from 'components/EditableTable';
+import getEditableTableFromRoot from 'components/EditableTable';
 
 import './web-components/popover';
 import './web-components/artnav';
@@ -59,7 +59,7 @@ export default class Antd extends Plugin {
         ALLOW_UNKNOWN_PROTOCOLS: !0,
         RETURN_DOM_FRAGMENT: !0,
         FORBID_TAGS: ["style"],
-        ADD_TAGS: ["xt-popover", "xt-artnav"],
+        ADD_TAGS: ["xt-popover", "xt-artnav", "iframe"],
         ADD_ATTR: ["content", "placement", "maxWidth", "prev", "next", "style"]
       });
     });
@@ -90,7 +90,7 @@ export default class Antd extends Plugin {
     // @ts-ignore
     window.components.VideoNote = VideoNote;
     // @ts-ignore
-    window.components.EditableTable = getEdittableFromRoot(this.app.vault.adapter.basePath);
+    window.components.EditableTable = getEditableTableFromRoot(this.app.vault.adapter.basePath);
     // @ts-ignore
     window.components.ThemeProvider = ThemeProvider;
     // @ts-ignore
@@ -201,6 +201,15 @@ export default class Antd extends Plugin {
         })()
       `
       eval(evalScript);
+    });
+
+    this.registerMarkdownCodeBlockProcessor('antd-table', (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+      const path = source.trim().split('\n')[0];
+      // @ts-ignore
+      const { EditableTable } = window.components;
+      ReactDOM.createRoot(el).render(React.createElement(EditableTable, {
+        path
+      }));
     });
 
     this.addSettingTab(new AntdSettingTab(this.app, this));
