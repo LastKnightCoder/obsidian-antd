@@ -657,3 +657,6 @@ root.render(<Paragraph />)
 
 - 添加 `antd-table` 代码块，快速创建可编辑表格
 
+### 1.7.0
+
+- 添加 Add Web Component xt-popover 命令

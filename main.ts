@@ -1,4 +1,4 @@
-import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, MarkdownRenderer, TFile } from 'obsidian';
+import { App, Plugin, PluginSettingTab, Setting, MarkdownPostProcessorContext, MarkdownRenderer, MarkdownView } from 'obsidian';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import * as antd from 'antd';
@@ -210,6 +210,17 @@ export default class Antd extends Plugin {
       ReactDOM.createRoot(el).render(React.createElement(EditableTable, {
         path
       }));
+    });
+
+    this.addCommand({
+      id: `Add Web Component xt-popover`,
+      name: `Add Web Component xt-popover`,
+      callback: () => {
+        const editor = this.app.workspace.getActiveViewOfType(MarkdownView).editor;
+        const content = editor.getSelection();
+        const newContent = `<xt-popover content=""><span class="comments">${content}</span></xt-popover>`
+        editor.replaceSelection(newContent);
+      }
     });
 
     this.addSettingTab(new AntdSettingTab(this.app, this));
