@@ -11,7 +11,6 @@ import Nav from './components/Nav';
 import NavCard from './components/NavCard';
 import NavList from './components/NavList';
 import CodeTab from './components/CodeTab';
-import VideoNote from 'components/VideoNote';
 import ThemeProvider from 'components/ThemeProvider';
 import getEditableTableFromRoot from 'components/EditableTable';
 
@@ -87,8 +86,6 @@ export default class Antd extends Plugin {
     window.components.NavList = NavList;
     // @ts-ignore
     window.components.CodeTab = CodeTab;
-    // @ts-ignore
-    window.components.VideoNote = VideoNote;
     // @ts-ignore
     window.components.EditableTable = getEditableTableFromRoot(this.app.vault.adapter.basePath);
     // @ts-ignore

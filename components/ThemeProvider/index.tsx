@@ -23,7 +23,7 @@ export default (Component: any) => {
       <ConfigProvider theme={{
         algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm
       }}>
-        <Component>{props.children}</Component>
+        <Component {...props}>{props.children}</Component>
       </ConfigProvider>
     )
   }
