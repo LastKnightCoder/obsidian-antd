@@ -660,3 +660,7 @@ root.render(<Paragraph />)
 ### 1.7.0
 
 - 添加 Add Web Component xt-popover 命令
+
+### 1.7.1
+
+- 修复 ThemeProvider 设置 props 无效的 bug
