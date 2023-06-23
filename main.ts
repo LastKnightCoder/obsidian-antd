@@ -93,7 +93,8 @@ export default class Antd extends Plugin {
     // @ts-ignore
     window.renderMarkdown = async (source: string) => {
       const tempEl = createDiv();
-      await MarkdownRenderer.renderMarkdown(source, tempEl, '.', null);
+      const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+      await MarkdownRenderer.renderMarkdown(source, tempEl, '.', view);
       return tempEl.innerHTML;
     };
     // @ts-ignore

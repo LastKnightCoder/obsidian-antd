@@ -664,3 +664,7 @@ root.render(<Paragraph />)
 ### 1.7.1
 
 - 修复 ThemeProvider 设置 props 无效的 bug
+
+### 1.7.4
+
+- 去除命令行错误
